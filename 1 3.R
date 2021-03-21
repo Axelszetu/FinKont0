@@ -10,9 +10,10 @@ for (i in (1:10)){
 }
 
 bundled_plot_data <- plot_data[[1]]
-for (i in (1:10)){
+for (i in (2:10)){
   bundled_plot_data <- rbind(bundled_plot_data, plot_data[[i]])
 }
 
 ggplot(bundled_plot_data, aes(x = x, y = S, colour = dt)) +
   geom_line()
+
