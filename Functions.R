@@ -18,9 +18,10 @@ MC_stock <- function(mu = 0.07, sigma = 0.2, dt = 1/255, M = 1, n = 1000, antith
   if (antithetic_variates == TRUE){
     outcomes <- rep(NA, 2*n)
   }
-  ruins <- 0
+  
+  m <- M/dt
+  
   for (j in (1:n)){
-    m <- M/dt
     dW <- rnorm(m, mean = 0, sd = 1) * sqrt(dt)
     
     S <- rep(NA, m+1)
@@ -57,4 +58,35 @@ make_path <- function(mu = 0.07, sigma = 0.2, dt = 1/255, M = 1){
   factor <- as.factor(dt)
   path <- data.frame(x, S, dt = factor)
   path
+}
+
+MC_convergence_tracker <- function(mu = 0.07, sigma = 0.2, dt = 1/255, M = 1, n = 1000){
+  
+  outcomes <- rep(NA, n)
+  
+  m <- M/dt
+  
+  for (j in (1:n)){
+    dW <- rnorm(m, mean = 0, sd = 1) * sqrt(dt)
+    
+    S <- rep(NA, m+1)
+    S[1] <- 1
+    for (i in (2:(m+1))){
+      S[i] <- S[i-1] + mu*S[i-1]*dt + sigma*S[i-1]*dW[i-1]
+    }
+    
+    outcomes[j] <- S[m+1]
+    
+  }
+  
+  
+  means <- rep(NA,n)
+  for (i in (1:n)){
+    means[i] <- mean(outcomes[1:i])
+  }
+  
+  x <- c(1:n)
+  factor <- as.factor(dt)
+  df <- data.frame(x = x, means, dt = factor)
+  df
 }
