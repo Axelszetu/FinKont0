@@ -46,6 +46,12 @@ qqnorm(y = logincriments, mean = logincriments_mean, sd = sigma); qqline(logincr
 
 #What are the prices for 2020?
 prices_2020 <- prices[15103:15355]
+logprices_2020 <- log(prices_2020)
+logincriments_2020 <- diff(logprices_2020)
+
+prices_before <- prices[1:15102]
+logprices_before <- log(prices_before)
+logincriments_before <- diff(logprices_before)
 #Perhaps it is time to write a function that estimates the parameters in the model given a vector of prices.
 #We should bear in mind that the parameters in the model specified in 1.4 doesn't neccesarily coincide with the standard parametrization of the log-normal dist'n.
 black_scholes_fit <- function(x){
@@ -60,3 +66,5 @@ black_scholes_fit <- function(x){
 }
 black_scholes_fit(prices)
 black_scholes_fit(prices_2020)
+
+t.test(x = logincriments_before, y = logincriments_2020, alternative = c("greater"))
