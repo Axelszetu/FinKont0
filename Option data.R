@@ -48,3 +48,9 @@ my_IV <- numeric(length = 209)
 for (i in (1:209)){
   my_IV[i] <- optimize(goal_function_maker(traded_options_aug31$Strike[i], traded_options_aug31$Ask[i]), interval = c(0,1), maximum = F)$minimum
 }
+
+IV_comparison_Yahoo <- data.frame(Strike = traded_options_aug31$Strike, IV = traded_options_aug31$IV, Label = "Yahoo")
+IV_comparison_my <- data.frame(Strike = traded_options_aug31$Strike, IV = my_IV, Label = "my_IV")
+IV_comparison_data <- rbind(IV_comparison_Yahoo, IV_comparison_my)
+IV_comparison_plot <- ggplot(IV_comparison_data, aes(x = Strike, y = IV, color = Label)) + geom_point() + geom_vline(aes(xintercept = 4229.89)) + geom_hline(aes(yintercept = 0.164302), colour = "purple")
+IV_comparison_plot
