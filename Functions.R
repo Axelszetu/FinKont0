@@ -138,3 +138,40 @@ d1_evaluator <- function(S = 1, K = 1, time = 1, r = 0.03, sigma = 0.2){
   d1 <- 1/(sigma*sqrt(time)) * (log(S/K) + (r + ((sigma^2)/2)*(time)))
   d1
 }
+
+hedge_experiment_maker <- function(S_0 = 1, Strike = 1, r = 0.03, mu = 0.07, sigma = 0.2, dt = 1/255, M = 1, n = 1000){
+  
+  end_balance <- rep(NA, n)
+  
+  m <- M/dt
+  
+  for (j in (1:n)){
+    dW <- rnorm(m, mean = 0, sd = 1) * sqrt(dt)
+    
+    S <- rep(NA, m+1)
+    S[1] <- S_0
+    for (i in (2:(m+1))){
+      S[i] <- S[i-1] + mu*S[i-1]*dt + sigma*S[i-1]*dW[i-1]
+    }
+    #at this point our path has been made
+    
+    #now we wanna do accounnting to keep track of portfolio balance
+    #we start by selling an option, so our initial balance is C(t)
+    #browser()
+    balance <- option_pricer_analytical(S = S_0, K = Strike, time = 1, r = r, sigma = sigma)
+    deltas <- pnorm(d1_evaluator(S = S))
+    deltas <- deltas[1:m]
+    S1 <- S[1:m]
+    S2 <- S[2:(m+1)]
+    balance <- balance - sum(S1*deltas) + sum(S2*deltas)
+    if(S[m+1] > Strike){
+      balance <- balance - S[m+1] + Strike
+    }
+    
+    end_balance[j] <- balance
+  }
+  
+  factor <- as.factor(dt)
+  df <- data.frame(end_balance, dt = factor)
+  df
+}
