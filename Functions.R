@@ -133,3 +133,8 @@ option_pricer_MC <- function(n = 10000, S = 1, K = 1, time = 1, r = 0.03, sigma 
   }
   out
 }
+
+d1_evaluator <- function(S = 1, K = 1, time = 1, r = 0.03, sigma = 0.2){
+  d1 <- 1/(sigma*sqrt(time)) * (log(S/K) + (r + ((sigma^2)/2)*(time)))
+  d1
+}
