@@ -28,7 +28,7 @@ hedge_experiment_maker <- function(S_0 = 1, Strike = 1, r = 0.03, mu = 0.07, sig
     if (fake_sigma > 0){
       sigma <- fake_sigma
     }
-    deltas <- pnorm(d1_evaluator(S = S, sigma = sigma))
+    deltas <- pnorm(d1_evaluator(S = S, sigma = sigma, time = 1 - dates))
     deltas <- deltas[1:m]
     S1 <- S[1:m]
     S2 <- S[2:(m+1)]

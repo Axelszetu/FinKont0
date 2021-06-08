@@ -68,3 +68,13 @@ black_scholes_fit(prices)
 black_scholes_fit(prices_2020)
 
 t.test(x = logincriments_before, y = logincriments_2020, alternative = c("greater"))
+
+recent_data <- df_sp500[(12500: 15000),]
+recent_logincriments <- diff(log(recent_data$GSPC.Adjusted))
+hist(recent_logincriments, breaks = 250, prob = T)
+x <- seq(from = -0.08, to = 0.06, by = 0.0005)
+y <- dnorm(x, mean = mean(recent_logincriments), sd = sd(recent_logincriments))
+lines(x,y)
+qqnorm(y = recent_logincriments, mean = mean(recent_logincriments), sd = sd(recent_logincriments)); qqline(recent_logincriments)
+recent_data[1,]
+recent_data[2501,]
