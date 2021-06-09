@@ -24,7 +24,7 @@ hedge_experiment_maker <- function(S_0 = 1, Strike = 1, r = 0.03, mu = 0.07, sig
     #we start by selling an option, so our initial balance is C(t)
     #browser()
     
-    balance <- option_pricer_analytical(S = S_0, K = Strike, time = 1, r = r, sigma = sigma)
+    balance <- option_pricer_analytical(S = S_0, K = Strike, time = 1, r = r, sigma = sigma)*discount_vector[1]
     if (fake_sigma > 0){
       sigma <- fake_sigma
     }
@@ -56,6 +56,7 @@ df6 <- hedge_experiment_maker(dt = 1/(6^5))
 plot_data <- rbind(df1, df2, df3, df4, df5)
 hedge_experiment_plot <- ggplot(plot_data, aes(x = steps, y = end_balance, fill = steps)) + geom_violin() + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", colour = "black")
 hedge_experiment_plot
+mean(df1$end_balance)
 
 strikes <- c(0.1, 0.5, 1, 5, 10, 100)
 strike_comparison <- lapply(strikes, hedge_experiment_maker, dt = 1/216, S_0 = 1)

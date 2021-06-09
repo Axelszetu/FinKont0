@@ -25,7 +25,7 @@ hedge_experiment_maker2 <- function(S_0 = 1, Strike = 1, r = 0.03, mu = 0.07, si
     #we start by selling an option, so our initial balance is C(t)
     #browser()
     
-    balance <- option_pricer_analytical(S = S_0, K = Strike, time = 1, r = r, sigma = sigma)
+    balance <- option_pricer_analytical(S = S_0, K = Strike, time = 1, r = r, sigma = sigma)*discount_vector[1]
     #balance <- 0
     if (fake_sigma > 0){
       sigma <- fake_sigma
