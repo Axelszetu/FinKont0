@@ -43,10 +43,10 @@ hedge_experiment_maker2 <- function(S_0 = 1, Strike = 1, r = 0.03, mu = 0.07, si
     S_T[j] = S[m+1]
   }
   
-  factor <- as.factor(1/dt)
-  factor2 <- as.factor(Strike)
-  factor3 <- as.factor(fake_sigma)
-  df <- data.frame(end_balance, S_T, steps = factor, Strike = factor2, fake_sigma = factor3)
+  #factor <- as.factor(1/dt)
+  #factor2 <- as.factor(Strike)
+  #factor3 <- as.factor(fake_sigma)
+  df <- data.frame(end_balance, S_T)
   df
 }
 
@@ -63,8 +63,10 @@ y2 <- x2
 x2 <- x2 + 1
 x <- c(x1, x2)
 y <- c(y1, y2)
-lines(x,y)
+payoff_line <- data.frame(end_balance = y, S_T = x)
 
+experiment_data <- rbind(experiment_data, payoff_line)
+ggplot(experiment_data, aes(x = S_T, y = end_balance)) + geom_point()
 plot(experiment_data$S_T, experiment_data$end_balance)
 lines(x,y)
 

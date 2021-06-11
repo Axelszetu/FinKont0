@@ -21,18 +21,18 @@ ggplot(bundled_plot_data, aes(x = x, y = S, colour = dt)) +
 #We wish to illustrate convergence of the MC-algorithm, but to differenc values of S
 
 plot_data <- list()
-dt <- c(5, 50, 500, 5000)
+dt <- c(5, 50, 500, 5000, 50000)
 dt <- 1/dt
 
 
-for (i in (1:4)){
+for (i in (1:length(dt))){
   plot_data[[i]] <- MC_convergence_tracker(dt = dt[i], n = 1500)
 }
 
 bundled_plot_data <- plot_data[[1]]
-for (i in (2:4)){
+for (i in (2:length(dt))){
   bundled_plot_data <- rbind(bundled_plot_data, plot_data[[i]])
 }
 
 ggplot(bundled_plot_data, aes(x = x, y = means, colour = dt)) +
-  geom_line()
+  geom_line() + geom_hline(yintercept = exp(0.07 + (1/2) * 0.2^2)) + coord_cartesian(ylim = c(1.04, 1.1))

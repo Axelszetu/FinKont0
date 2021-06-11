@@ -1,15 +1,15 @@
-Wilmott_experiment_maker <- function(
-    S = 1,
-    K = 1,
-    r = 0.03,
-    mu = 0.07,
-    sigma = 0.2,
-    implied_sigma = 0.15,
-    hedge_sigma = 0.2,
-    dt = 1/255,
-    M = 1,
-    n = 1000){
+wilmott_experiment_maker <- function(S_0 = 1,
+                                     Strike = 1,
+                                     r = 0.03,
+                                     mu = 0.07,
+                                     sigma = 0.2,
+                                     implied_sigma = 0.15,
+                                     hedge_sigma = 0.2,
+                                     dt = 1/255,
+                                     M = 1,
+                                     n = 1000){
   m <- M/dt
+  PnL <- rep(NA, n)
   
   for (j in (1:n)){
     dW <- rnorm(m, mean = 0, sd = 1) * sqrt(dt)
@@ -25,28 +25,42 @@ Wilmott_experiment_maker <- function(
     #we will need to discount along the way so we make a discount vector
     dates <- seq(from = 0, to = M, length.out = (m+1))
     discount_vector <- exp(r*(M-dates))
-    discount_vector1 <- discount_vector[1:m]
-    discount_vector2 <- discount_vector[2:(m+1)]
     #we start by selling an option, so our initial balance is C(t)
     #browser()
+    balance <- 0
     
-    balance <- option_pricer_analytical(S = S_0, K = Strike, time = 1, r = r, sigma = sigma)
-    if (fake_sigma > 0){
-      sigma <- fake_sigma
-    }
-    deltas <- pnorm(d1_evaluator(S = S, sigma = sigma, time = 1 - dates))
-    deltas <- deltas[1:m]
-    S1 <- S[1:m]
-    S2 <- S[2:(m+1)]
-    balance <- balance - sum(S1*deltas*discount_vector1) + sum(S2*deltas*discount_vector2)
-    if(S[m+1] > Strike){
-      balance <- balance - S[m+1] + Strike
+    deltas <- pnorm(d1_evaluator(S = S, sigma = hedge_sigma, time = 1 - dates))
+    deltas1 <- deltas[2:m]
+    deltas2 <- deltas[3:(m+1)]
+    
+    option_payoff <- 0
+    if (S[m+1] > Strike){
+      option_payoff <- S[m+1] - Strike
     }
     
-    
+    hedging_balance <- deltas[1]*S[1]*discount_vector[1] + sum(discount_vector[2:m]*S[2:m]*(deltas1 - deltas2) + deltas[m]*S[m+1])
+    balance <- hedging_balance + option_payoff - option_pricer_analytical(S = S[1], K = Strike, time = M, r = r, sigma = implied_sigma)*discount_vector[1]
+    PnL[j] <- balance
   }
   
-  df <- data.frame(end_balance, steps = factor, Strike = factor2, fake_sigma = factor3)
-  df
+  PnL
 }
+
+#Construction a signel trial of the hedge experiment
+M <- 1
+dt <- 1/255
+mu <- 0.07
+m = M/dt
+dW <- rnorm(m, mean = 0, sd = 1) * sqrt(dt)
+sigma <- 0.2
+implied_sigma <- 0.15
+hedge_sigma <- 0.2
+r <- 0.03
+
+S <- rep(NA, m+1)
+S[1] <- 1
+for (i in (2:(m+1))){
+  S[i] <- S[i-1] + mu*S[i-1]*dt + sigma*S[i-1]*dW[i-1]
 }
+
+
